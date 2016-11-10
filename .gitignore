@@ -1,0 +1,4 @@
+*.javac
+.idea/*
+bin/*
+target/*
