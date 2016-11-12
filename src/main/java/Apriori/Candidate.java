@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class Candidate {
 
-	int count=0;
-	ArrayList<String> itemset = new ArrayList<String>();
+	public int count=0;
+	public ArrayList<String> itemset = new ArrayList<String>();
 	
 	public Candidate(ArrayList<String> itemset){
 		this.itemset = itemset;

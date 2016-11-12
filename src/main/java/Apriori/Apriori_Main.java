@@ -1,4 +1,5 @@
 package Apriori;
+import Base.Frequent_Itemset;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -30,8 +31,8 @@ public class Apriori_Main {
 		FW.write("");
 		for(Frequent_Itemset I : L){
 			if(I.itemset.size() > 1){
-				System.out.println("["+I +"]"+ ": "+I.support_count);
-				FW.append("["+I.toString()+"]" + ": " + I.support_count+"\n"); 
+				System.out.println("["+I +"]"+ ": "+I.supportCount);
+				FW.append("["+I.toString()+"]" + ": " + I.supportCount +"\n");
 			}	
 		}
 		System.out.println("Algorithm time: "+ duration);

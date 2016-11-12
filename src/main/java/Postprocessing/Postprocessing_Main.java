@@ -1,19 +1,20 @@
 package Postprocessing;
 
+import Base.Association_Rule;
+import Base.Frequent_Itemset;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
 
 
 public class Postprocessing_Main {
 
-	static Frequent_Itemset [] FI;
+	static Frequent_Itemset[] FI;
 	static double confidence_threshold;
 	
 	public static void main(String[] args) throws IOException{
@@ -99,12 +100,13 @@ public class Postprocessing_Main {
                 left_side.itemset = sublist;
                 for(int j =0; j<FI.length ; j++){
                     if(left_side.matches(FI[j]))
-                        left_side.support_count = FI[j].support_count;
+                        left_side.supportCount = FI[j].supportCount;
                         break;
                 }
-                Association_Rule rule = new Association_Rule(left_side,l,FI);
-                if(rule.confidence>confidence_threshold)
-                    rules.add(rule);
+                // todo: fix this part about the association rules
+//                Association_Rule rule = new Association_Rule(left_side,l,FI);
+//                if(rule.confidence>confidence_threshold)
+//                    rules.add(rule);
 
             }
         }

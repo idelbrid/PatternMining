@@ -1,5 +1,5 @@
 package FPGrowth;
-
+import Base.Frequent_Itemset;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -26,7 +26,7 @@ public class FP_Growth_Main {
 		FileWriter FW = new FileWriter(new File(args[2]));
 		FW.write("");
 		for(Frequent_Itemset I: frequent_itemsets){
-			FW.append(I.itemset.toString() + ": "+ I.support_count+"\n");
+			FW.append(I.itemset.toString() + ": "+ I.supportCount +"\n");
 		}
 		System.out.println("Algorithm time: "+duration);
 		FW.close();
@@ -66,7 +66,7 @@ public class FP_Growth_Main {
 		ArrayList<Frequent_Itemset> frequent_itemsets =FP_Growth(main_tree, dummyset, threshold);
 
 //		for(main.Frequent_Itemset i : frequent_itemsets){
-//		//	System.out.println("Itemset: " + i.itemset.toString() + " with support "+ i.support_count);
+//		//	System.out.println("Itemset: " + i.itemset.toString() + " with support "+ i.supportCount);
 //		}
 		return frequent_itemsets;
 	}
@@ -119,7 +119,7 @@ public class FP_Growth_Main {
 				Frequent_Itemset added_set = new Frequent_Itemset();
 				added_set.itemset.add(e.getKey());
 				added_set.itemset.addAll(suffix);
-				added_set.support_count = support;
+				added_set.supportCount = support;
 				All_Freq_Itemsets.add(added_set);
 				FP_Tree conditional_tree = main_tree.Conditional_Tree(e.getKey(),threshold);
 				ArrayList<Frequent_Itemset> toAdd  = FP_Growth(conditional_tree, added_set.itemset, threshold);
