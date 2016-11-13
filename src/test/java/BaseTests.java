@@ -3,13 +3,13 @@ import Base.Association_Rule;
 import org.junit.Test;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import static org.junit.Assert.assertArrayEquals;
+
 //import static org.junit.Assert.assertNotEquals
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+
 /**
  * Created by Ian on 11/12/2016.
  */
@@ -81,5 +81,64 @@ public class BaseTests {
         Frequent_Itemset ritemset = new Frequent_Itemset(new ArrayList<String>(Arrays.asList("Beef", "Chicken")), 40);
         Association_Rule rule = new Association_Rule(litemset, ritemset, fitemset);
         assertEquals(rule.toString(), "{Fish} => {Beef, Chicken}");
+    }
+
+    @Test
+    public void checkPowerSet() throws Exception{
+        ArrayList<String> baseSet = new ArrayList<String>();
+        baseSet.add("A");
+        baseSet.add("B");
+        baseSet.add("C");
+        baseSet.add("D");
+//        Association_Rule dummy = new Association_Rule(Null, Null, Null);
+        Method powerSet = Association_Rule.class.getDeclaredMethod("powerSet", ArrayList.class);
+        powerSet.setAccessible(true);
+        ArrayList<ArrayList> powerSets = (ArrayList<ArrayList>) powerSet.invoke(null, baseSet);
+        assertEquals(powerSets.size()*1.0, Math.pow(2.0, 4.0), 0.001);
+
+        ArrayList<ArrayList> expected = new ArrayList<ArrayList>(Arrays.asList(
+
+        ));
+    }
+
+    @Test
+    public void checkMakeRules(){
+        Frequent_Itemset.setDatabaseLength(100);
+
+        Frequent_Itemset itemset1 = new Frequent_Itemset(new ArrayList<String>(Arrays.asList("Fish")), 50);
+        Frequent_Itemset itemset2 = new Frequent_Itemset(new ArrayList<String>(Arrays.asList("Beef")), 40);
+        Frequent_Itemset itemset3 = new Frequent_Itemset(new ArrayList<String>(Arrays.asList("Chicken")), 40);
+        Frequent_Itemset itemset4 = new Frequent_Itemset(new ArrayList<String>(Arrays.asList("Fish", "Beef")), 40);
+        Frequent_Itemset itemset5 = new Frequent_Itemset(new ArrayList<String>(Arrays.asList("Fish", "Chicken")), 40);
+        Frequent_Itemset itemset6 = new Frequent_Itemset(new ArrayList<String>(Arrays.asList("Beef", "Chicken")), 40);
+        Frequent_Itemset itemset7 = new Frequent_Itemset(
+                new ArrayList<String>(Arrays.asList("Fish", "Beef", "Chicken")), 20);
+
+        ArrayList<Frequent_Itemset> knownFreqentItemsets = new ArrayList<Frequent_Itemset>(Arrays.asList(
+                itemset1, itemset2, itemset3, itemset4, itemset5, itemset6, itemset7
+        ));
+        ArrayList<Association_Rule> rules = Association_Rule.generateAssertionRules(knownFreqentItemsets);
+
+        Association_Rule expectedRule1 = new Association_Rule(itemset1, itemset2, itemset4);
+        Association_Rule expectedRule2 = new Association_Rule(itemset2, itemset1, itemset4);
+        Association_Rule expectedRule3 = new Association_Rule(itemset4, itemset3, itemset7);
+        Association_Rule expectedRule4 = new Association_Rule(itemset3, itemset4, itemset7);
+        assertEquals(12, rules.size());
+        boolean rule1in=false, rule2in=false, rule3in=false, rule4in=false;
+        for(Association_Rule rule : rules){
+            if(expectedRule1.toString().equals(rule.toString()))
+                rule1in = true;
+            if(expectedRule2.toString().equals(rule.toString()))
+                rule2in = true;
+            if(expectedRule3.toString().equals(rule.toString()))
+                rule3in = true;
+            if(expectedRule4.toString().equals(rule.toString()))
+                rule4in = true;
+        }
+
+        assertTrue(rule1in);
+        assertTrue(rule2in);
+        assertTrue(rule3in);
+        assertTrue(rule4in);
     }
 }

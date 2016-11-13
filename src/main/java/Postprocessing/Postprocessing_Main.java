@@ -64,28 +64,6 @@ public class Postprocessing_Main {
 	}
 
 
-    public static ArrayList<ArrayList> powerSet(ArrayList<String> curSet){
-        if(!curSet.isEmpty()){
-            String head = curSet.remove(0);
-
-            ArrayList<ArrayList> subPowerSet = powerSet(curSet);
-            ArrayList<ArrayList> addedLists = new ArrayList<ArrayList>();
-            for(ArrayList<String> l : subPowerSet){
-                ArrayList<String> lClone = (ArrayList<String>) l.clone();
-                lClone.add(head);
-                addedLists.add(lClone);
-            }
-            subPowerSet.addAll(addedLists);
-            return subPowerSet;
-        }
-        else{
-            ArrayList<ArrayList> toReturn = new ArrayList<ArrayList>();
-            toReturn.add(new ArrayList<String>());
-            return toReturn;
-        }
-    }
-
-
     public static ArrayList<Association_Rule> Generate_Association_Rule(Frequent_Itemset l){
         //int i =0;
         ArrayList<Association_Rule> rules = new ArrayList<Association_Rule>();
