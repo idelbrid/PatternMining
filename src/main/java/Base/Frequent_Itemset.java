@@ -2,11 +2,13 @@ package Base;
 
 import Apriori.Candidate;
 import java.util.ArrayList;
+import java.util.Comparator;
 //import java.util.Comparator;
 
 
 public class Frequent_Itemset {
-    static int databaseLength = 1;
+    private static int databaseLength = 1;
+    private static final ItemSorter sorter = new ItemSorter();
 	public int supportCount = 0;
     public double support = 0.0;
 	public ArrayList<String> itemset;
@@ -20,9 +22,9 @@ public class Frequent_Itemset {
 	public Frequent_Itemset(ArrayList<String> itemset, int support_count){
 		this();
 		this.itemset = (ArrayList<String>) itemset.clone();
-        this.itemset.sort(String.CASE_INSENSITIVE_ORDER);
+        this.itemset.sort(sorter);
 		this.supportCount = support_count;
-        support = supportCount / (float)databaseLength;
+        this.support = supportCount / (float)databaseLength;
 
     }
 

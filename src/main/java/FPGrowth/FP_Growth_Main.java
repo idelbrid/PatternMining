@@ -30,8 +30,6 @@ public class FP_Growth_Main {
 		}
 		System.out.println("Algorithm time: "+duration);
 		FW.close();
-		
-		
 	}
 	
 	
@@ -58,8 +56,8 @@ public class FP_Growth_Main {
 		//Scan #2: based on frequency of an item, sort each basket
 		//Add to tree
 		FR = new FileReader(file);
-		FP_Tree main_tree = new FP_Tree(FR,threshold,item_hash);
-		
+		FP_Tree main_tree = new FP_Tree(FR,threshold);
+
 		
 		//Start reading from tree: 
 		ArrayList<String> dummyset = new ArrayList<String>();

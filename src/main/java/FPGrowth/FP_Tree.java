@@ -1,79 +1,58 @@
 package FPGrowth;
+import Base.ItemSorter;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.Map.Entry;
 
 
 public class FP_Tree {
+    private static final ItemSorter  sorter = new ItemSorter();
 	ArrayList<String> suffix = new ArrayList<String>();
 	FP_Node root;
 	Hashtable<String,FP_Node> header_table = new Hashtable<String,FP_Node>();
 	
-	public FP_Tree(){
-		
-	}
-	public FP_Tree(FileReader FR, int threshold, 
-			Hashtable<String,Integer> item_hash) throws IOException{
+	public FP_Tree(){}
 
-		Scanner file_scanner = new Scanner(FR);
-	//a bunch of initialization
-		Basket_Sorter BS = new Basket_Sorter(item_hash);
-		FP_Node null_head = new FP_Node();
-		root = null_head;
-		FP_Node current_node;
-		
-		while(file_scanner.hasNext()){ //for each item
-			String line = file_scanner.nextLine();
-			Scanner line_scanner = new Scanner(line);	
-			ArrayList<String> Basket = new ArrayList<String>();
-			current_node = null_head;
-			while(line_scanner.hasNext()){				//creating itemlist
-				String raw_word = line_scanner.next();
-				if(raw_word.endsWith(","))
-					raw_word = raw_word.substring(0,raw_word.indexOf(","));
-				String item = raw_word;
-				if(item_hash.containsKey(item)){
-					Basket.add(item);
-				}
-			}
-			line_scanner.close();
-			Collections.sort(Basket,BS);				//sorting the basket according to items' positions
-														//in the header_table
-			Iterator<String> it = Basket.iterator();
-			while(it.hasNext()){						//iterating through the basket/itemset
-				String item = it.next();
-				if(current_node.has_child(item)){ 		//previous prefix found
-					FP_Node next = current_node.get_child(item);
-					next.count ++;
-					current_node = next;
-				}
-				else{									//previous prefix NOT found
-					FP_Node added_node = new FP_Node();
-					added_node.value = item;
-					added_node.count = 1;
-					if( header_table.containsKey(item))
-					{
-						FP_Node previous_head = header_table.get(item);
-						added_node.sibling = previous_head;
-						header_table.put(item,added_node);
-						
-					}
-					else{
-						header_table.put(item, added_node);
-					}
-					added_node.parent = current_node;
-					current_node.children.add(added_node);
-					current_node =added_node;
-				}
-				
-			}//ends itemset
-				
-		}//ends data 
+	public FP_Tree(Iterable<ArrayList> baskets, int threshold){
+        FP_Node null_head = new FP_Node();
+        this.root = null_head;
+        FP_Node currentNode;
+        for(ArrayList<String> basket : baskets){
+            Collections.sort(basket, sorter);
+            currentNode = null_head;
 
-		file_scanner.close();
-		
+            for(String item : basket){						//iterating through the basket/itemset
+                if(currentNode.has_child(item)){ 		    //previous prefix found
+                    FP_Node nextNode = currentNode.get_child(item);
+                    nextNode.count ++;
+                    currentNode = nextNode;
+                }
+                else{									    //previous prefix NOT found
+                    FP_Node added_node = new FP_Node(item, 1);
+                    if( header_table.containsKey(item))
+                    {
+                        FP_Node previous_head = header_table.get(item);
+                        added_node.sibling = previous_head;
+                        header_table.put(item,added_node);
+                    }
+                    else{
+                        header_table.put(item, added_node);
+                    }
+                    added_node.parent = currentNode;
+                    currentNode.children.add(added_node);
+                    currentNode =added_node;
+                }
+
+            }//ends itemset
+
+        }//ends data
+    }
+
+	public FP_Tree(FileReader FR, int threshold) throws IOException{
+        this(readBaskets(FR), threshold);
 	}
 	
 	public FP_Tree Conditional_Tree(String selected_item, int threshold){
@@ -115,21 +94,25 @@ public class FP_Tree {
 				it.remove(); 
 			}
 		}	
-		Basket_Sorter BS = new Basket_Sorter(item_hash);
+//		Basket_Sorter BS = new Basket_Sorter(item_hash);
 		
 		for(path p : paths){
 			for(int i=0; i<p.list.size(); i++){
-				if(removal_list.contains(p.list.get(i).value))
-				{System.out.println("Removing "+p.list.get(i).value+" from list");
-					p.list.remove(p.list.get(i)); i--;}
+				if(removal_list.contains(p.list.get(i).value)){
+                    System.out.println("Removing "+p.list.get(i).value+" from list");
+					p.list.remove(p.list.get(i));
+                    i--;
+				}
 			}
 			for(int i=0; i<p.basket.size(); i++){
 				String s = p.basket.get(i);
-				if(removal_list.contains(s))
-				{System.out.println("Removing "+s+" from basket");
-					p.basket.remove(s); i--; }
+				if(removal_list.contains(s)){
+                    System.out.println("Removing "+s+" from basket");
+					p.basket.remove(s);
+                    i--;
+				}
 			}
-			Collections.sort(p.basket,BS);
+			Collections.sort(p.basket, sorter);
 			System.out.println("\nSorted: "+p.toString());
 			FP_Node current_node =  cond_tree.root;
 
@@ -153,7 +136,6 @@ public class FP_Tree {
 						FP_Node previous_head = cond_tree.header_table.get(item);
 						added_node.sibling = previous_head;
 						cond_tree.header_table.put(item,added_node);
-						
 					}
 					else{
 						cond_tree.header_table.put(item, added_node);
@@ -165,10 +147,38 @@ public class FP_Tree {
 				}
 				
 			}//ends itemset
+
+            FP_Node currentNode = header_table.get(selected_item);
+            while(currentNode != null){
+
+                currentNode = current_node.sibling;
+            }
 		}	
 
 	
 	return cond_tree;
 	
 	}
+
+	private static ArrayList<ArrayList> readBaskets(FileReader FR) throws IOException{
+        Scanner file_scanner = new Scanner(FR);
+        ArrayList<ArrayList> baskets = new ArrayList<ArrayList>();
+        while(file_scanner.hasNext()) {   //for each item
+            String line = file_scanner.nextLine();
+            Scanner line_scanner = new Scanner(line);
+            ArrayList<String> basket = new ArrayList<String>();
+
+            while (line_scanner.hasNext()) {                //creating itemlist
+                String raw_word = line_scanner.next();
+                if (raw_word.endsWith(","))
+                    raw_word = raw_word.substring(0, raw_word.indexOf(","));
+                String item = raw_word;
+                basket.add(item);
+            }
+            baskets.add(basket);
+            line_scanner.close();
+        }
+        file_scanner.close();
+        return baskets;
+    }
 }

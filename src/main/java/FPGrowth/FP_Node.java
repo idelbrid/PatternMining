@@ -15,10 +15,22 @@ public class FP_Node {
 		children = new ArrayList<FP_Node>();
 		count = 0;
 		value = "";
-		
-		
 	}
-	
+
+	public FP_Node(String value, int count){
+        this();
+        this.count = count;
+        this.value = value;
+    }
+
+    public int getCount(){
+        return this.count;
+    }
+
+    public String getValue(){
+        return this.value;
+    }
+
 	public boolean has_child(String str){
 		
 		for(FP_Node node : children)
@@ -73,5 +85,26 @@ public class FP_Node {
 		return toReturn;
 				
 	}
+
+	public void addSubtree(FP_Node other, int minCount){
+        for(FP_Node child : other.children){
+            if(child.getCount() >= minCount) {
+                if (this.has_child(child.getValue())) {
+                    FP_Node thisChild = this.get_child(child.getValue());
+                    thisChild.count += child.getCount();
+
+                }
+                else {
+                    FP_Node newThisChild = new FP_Node(child.getValue(), child.getCount());
+                    this.children.add(newThisChild);
+                    newThisChild.parent = this;
+                }
+                this.get_child(child.getValue()).addSubtree(child, minCount);  // Recursive call on children
+            }
+            else{
+                continue;
+            }
+        }
+    }
 	
 }

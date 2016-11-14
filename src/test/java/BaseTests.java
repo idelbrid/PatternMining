@@ -28,7 +28,7 @@ public class BaseTests {
         ArrayList<String> itemset = new ArrayList<String>(Arrays.asList("Fish", "Beef", "beef"));
         int supportCount = 20;
         Frequent_Itemset myItemsetObject = new Frequent_Itemset(itemset, supportCount);
-        ArrayList<String> sortedItemset = new ArrayList<String>(Arrays.asList("Beef", "beef", "Fish"));
+        ArrayList<String> sortedItemset = new ArrayList<String>(Arrays.asList("Beef", "Fish", "beef"));
         assertArrayEquals(myItemsetObject.itemset.toArray(), sortedItemset.toArray());
     }
 
